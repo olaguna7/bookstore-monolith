@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -17,6 +18,8 @@ public class Order {
     @Id
     private Long orderId;
     private String address;
+    private Instant orderDate;
+    private double total;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

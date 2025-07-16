@@ -7,7 +7,7 @@ public record OrderDTO(
         String address,
         LocalDateTime date,
         double total,
-        UserDTO user,
+        Long userId,
         List<BookDTO> books
 ) {
 }

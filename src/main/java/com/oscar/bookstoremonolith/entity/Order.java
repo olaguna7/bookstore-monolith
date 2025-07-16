@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -18,7 +18,7 @@ public class Order {
     @Id
     private Long orderId;
     private String address;
-    private Instant orderDate;
+    private LocalDateTime date = LocalDateTime.now();
     private double total;
 
     @ManyToOne

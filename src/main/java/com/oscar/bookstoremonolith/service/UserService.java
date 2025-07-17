@@ -32,9 +32,9 @@ public class UserService {
 
     public User createUser(UserCreateDTO userDTO) {
         User user = new User();
-        user.setUsername(userDTO.username());
-        user.setEmail(userDTO.email());
-        user.setPassword(userDTO.password());
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
         return userRepository.save(user);
     }
 

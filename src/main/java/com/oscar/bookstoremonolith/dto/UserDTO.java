@@ -1,10 +1,16 @@
 package com.oscar.bookstoremonolith.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
-public record UserDTO(
-        String username,
-        String email,
-        List<OrderDTO> orders
-) {
+@Getter
+@Setter
+@AllArgsConstructor
+public class UserDTO {
+        private String username;
+        private String email;
+        private List<OrderDTO> orders;
 }

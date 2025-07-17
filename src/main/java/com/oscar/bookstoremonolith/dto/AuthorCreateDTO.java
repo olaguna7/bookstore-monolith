@@ -10,8 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
-public class AuthorDTO {
-        String name;
-        Date birthday;
-        List<BookSummaryDTO> books;
+public class AuthorCreateDTO {
+    String name;
+    Date birthday;
+    List<Long> booksIds;
 }

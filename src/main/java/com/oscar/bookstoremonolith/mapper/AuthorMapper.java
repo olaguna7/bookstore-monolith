@@ -4,9 +4,13 @@ import com.oscar.bookstoremonolith.dto.AuthorDTO;
 import com.oscar.bookstoremonolith.entity.Author;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+import java.util.List;
+
+@Mapper(componentModel = "spring", uses = {BookSummaryMapper.class})
 public interface AuthorMapper {
 
     AuthorDTO toDto(Author author);
+
+    List<AuthorDTO> toDtoList(List<Author> authors);
 
 }

@@ -30,12 +30,12 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public User createUser(UserCreateDTO userDTO) {
+    public UserDTO createUser(UserCreateDTO userDTO) {
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
-        return userRepository.save(user);
+        return userMapper.toDto(userRepository.save(user));
     }
 
 }

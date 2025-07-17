@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 public class UserDTO {
+        private Long userId;
         private String username;
         private String email;
         private List<OrderDTO> orders;

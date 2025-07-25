@@ -5,7 +5,11 @@ import com.oscar.bookstoremonolith.dto.BookCreateDTO;
 import com.oscar.bookstoremonolith.dto.BookDTO;
 import com.oscar.bookstoremonolith.service.BookService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import com.oscar.bookstoremonolith.utils.PaginationUtils;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +28,8 @@ public class BookController {
     }
 
     @GetMapping
-    public ApiResponse<List<BookDTO>> getAllBooks() {
-        List<BookDTO> books = bookService.findAll();
+    public ApiResponse<Page<BookDTO>> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
+        Page<BookDTO> books = PaginationUtils.listToPage(bookService.findAll(), pageable);
         return ApiResponseUtils.success("Books found", books);
     }
 

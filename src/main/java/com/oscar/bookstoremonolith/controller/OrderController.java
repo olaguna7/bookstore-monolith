@@ -6,7 +6,11 @@ import com.oscar.bookstoremonolith.dto.OrderDTO;
 import com.oscar.bookstoremonolith.entity.Order;
 import com.oscar.bookstoremonolith.service.OrderService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import com.oscar.bookstoremonolith.utils.PaginationUtils;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +28,8 @@ public class OrderController {
     }
 
     @GetMapping
-    public ApiResponse<List<OrderDTO>> getAllOrders() {
-        List<OrderDTO> orders = orderService.findAll();
+    public ApiResponse<Page<OrderDTO>> getAllOrders(@PageableDefault Pageable pageable) {
+        Page<OrderDTO> orders = PaginationUtils.listToPage(orderService.findAll(), pageable);
         return ApiResponseUtils.success("Orders found", orders);
     }
 

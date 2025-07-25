@@ -38,6 +38,7 @@ public class BookService {
         List<Author> authors = authorRepository.findAllByAuthorIdIn(bookCreateDTO.getAuthorsIds());
         Book book = bookCreateMapper.toEntity(bookCreateDTO);
         book.setAuthors(authors);
+        authors.forEach(author -> author.getBooks().add(book));
         return bookMapper.toDto(bookRepository.save(book));
     }
 

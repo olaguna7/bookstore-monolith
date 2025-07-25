@@ -15,6 +15,6 @@ public class OrderDTO {
         private String address;
         private LocalDateTime date;
         private double total;
-        private Long userId;
-        private List<BookDTO> books;
+        private UserSummaryDTO user;
+        private List<BookSummaryDTO> books;
 }

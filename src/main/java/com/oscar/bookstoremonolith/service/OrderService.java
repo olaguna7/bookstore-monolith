@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -42,7 +43,18 @@ public class OrderService {
         order.setAddress(orderCreateDTO.getAddress());
         order.setUser(user);
         order.setBooks(books);
-        return orderMapper.toDto(orderRepository.save(order));
+        books.forEach(book -> book.setOrder(order));
+        OrderDTO orderDTO = orderMapper.toDto(orderRepository.save(order));
+        bookRepository.saveAll(books);
+        orderDTO.setTotal(calculatePriceOrder(order));
+        return orderDTO;
+    }
+
+    private double calculatePriceOrder(Order order) {
+        return order.getBooks().stream()
+                .map(Book::getPrice)
+                .mapToDouble(Double::doubleValue)
+                .sum();
     }
 
 }

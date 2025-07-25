@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserDTO {
-        private Long userId;
-        private String username;
-        private String email;
+public class OrderSummaryDTO {
+    private Long orderId;
+    private LocalDateTime date;
+    private double total;
 }

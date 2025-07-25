@@ -13,6 +13,5 @@ public class BookDTO {
         private String isbn;
         private String description;
         private double price;
-        private OrderDTO order;
-        private List<AuthorDTO> authors;
+        private List<AuthorSummaryDTO> authors;
 }

@@ -6,6 +6,7 @@ import com.oscar.bookstoremonolith.dto.OrderDTO;
 import com.oscar.bookstoremonolith.entity.Order;
 import com.oscar.bookstoremonolith.service.OrderService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ApiResponse<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
+    public ApiResponse<OrderDTO> createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO) {
         OrderDTO orderCreated = orderService.createOrder(orderCreateDTO);
         return new ApiResponse<>(
                 HttpStatus.CREATED.value(),

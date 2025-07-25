@@ -5,6 +5,7 @@ import com.oscar.bookstoremonolith.dto.UserCreateDTO;
 import com.oscar.bookstoremonolith.dto.UserDTO;
 import com.oscar.bookstoremonolith.service.UserService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ApiResponse<UserDTO> createUser(@RequestBody UserCreateDTO userDTO) {
+    public ApiResponse<UserDTO> createUser(@Valid @RequestBody UserCreateDTO userDTO) {
         UserDTO userCreated = userService.createUser(userDTO);
         return new ApiResponse<>(
                 HttpStatus.CREATED.value(),

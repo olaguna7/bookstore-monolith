@@ -5,6 +5,7 @@ import com.oscar.bookstoremonolith.dto.AuthorCreateDTO;
 import com.oscar.bookstoremonolith.dto.AuthorDTO;
 import com.oscar.bookstoremonolith.service.AuthorService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class AuthorController {
     }
 
     @PostMapping
-    public ApiResponse<AuthorDTO> createAuthor(@RequestBody AuthorCreateDTO authorCreateDTO) {
+    public ApiResponse<AuthorDTO> createAuthor(@Valid @RequestBody AuthorCreateDTO authorCreateDTO) {
         AuthorDTO author = authorService.createAuthor(authorCreateDTO);
         return new ApiResponse<>(
                 HttpStatus.CREATED.value(),

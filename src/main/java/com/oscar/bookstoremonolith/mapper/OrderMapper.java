@@ -7,10 +7,9 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class, BookMapper.class})
+@Mapper(componentModel = "spring", uses = {UserSummaryMapper.class, BookSummaryMapper.class})
 public interface OrderMapper {
 
-    @Mapping(target = "userId", source = "user.userId")
     OrderDTO toDto(Order order);
 
     List<OrderDTO> toDtoList(List<Order> orders);

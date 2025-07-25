@@ -33,4 +33,15 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(DuplicateEntityException.class)
+    public ApiResponse<Void> handleDuplicateUsername(DuplicateEntityException exception) {
+        String message = exception.getMessage();
+        return new ApiResponse<>(
+                HttpStatus.CONFLICT.value(),
+                message,
+                null,
+                LocalDateTime.now()
+        );
+    }
+
 }

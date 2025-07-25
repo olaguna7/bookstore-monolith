@@ -5,6 +5,7 @@ import com.oscar.bookstoremonolith.dto.BookDTO;
 import com.oscar.bookstoremonolith.entity.Author;
 import com.oscar.bookstoremonolith.entity.Book;
 import com.oscar.bookstoremonolith.entity.Order;
+import com.oscar.bookstoremonolith.exception.DuplicateEntityException;
 import com.oscar.bookstoremonolith.mapper.BookCreateMapper;
 import com.oscar.bookstoremonolith.mapper.BookMapper;
 import com.oscar.bookstoremonolith.repository.AuthorRepository;
@@ -35,6 +36,10 @@ public class BookService {
     }
 
     public BookDTO createBook(BookCreateDTO bookCreateDTO) {
+        if (bookRepository.existsByIsbn(bookCreateDTO.getIsbn())) {
+            throw new DuplicateEntityException("Book", "isbn", bookCreateDTO.getIsbn());
+        }
+
         List<Author> authors = authorRepository.findAllByAuthorIdIn(bookCreateDTO.getAuthorsIds());
         Book book = bookCreateMapper.toEntity(bookCreateDTO);
         book.setAuthors(authors);

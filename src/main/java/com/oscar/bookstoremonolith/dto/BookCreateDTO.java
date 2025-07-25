@@ -1,5 +1,6 @@
 package com.oscar.bookstoremonolith.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class BookCreateDTO {
     private String description;
 
     @NotNull
+    @Min(0)
     private double price;
 
     @NotNull

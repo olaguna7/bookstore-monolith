@@ -1,11 +1,15 @@
 package com.oscar.bookstoremonolith.controller;
 
+import com.oscar.bookstoremonolith.dto.ApiResponse;
 import com.oscar.bookstoremonolith.dto.OrderCreateDTO;
 import com.oscar.bookstoremonolith.dto.OrderDTO;
 import com.oscar.bookstoremonolith.entity.Order;
 import com.oscar.bookstoremonolith.service.OrderService;
+import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,18 +23,26 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
-        return orderService.findAll();
+    public ApiResponse<List<OrderDTO>> getAllOrders() {
+        List<OrderDTO> orders = orderService.findAll();
+        return ApiResponseUtils.success("Orders found", orders);
     }
 
     @GetMapping("/{orderId}")
-    public OrderDTO getById(@PathVariable("orderId") Long orderId) {
-        return orderService.findById(orderId);
+    public ApiResponse<OrderDTO> getById(@PathVariable("orderId") Long orderId) {
+        OrderDTO order = orderService.findById(orderId);
+        return ApiResponseUtils.success("Order found", order);
     }
 
     @PostMapping
-    public OrderDTO createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
-        return orderService.createOrder(orderCreateDTO);
+    public ApiResponse<OrderDTO> createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
+        OrderDTO orderCreated = orderService.createOrder(orderCreateDTO);
+        return new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "Order created",
+                orderCreated,
+                LocalDateTime.now()
+        );
     }
 
 }

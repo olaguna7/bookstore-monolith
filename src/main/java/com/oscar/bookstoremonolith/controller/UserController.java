@@ -1,11 +1,14 @@
 package com.oscar.bookstoremonolith.controller;
 
+import com.oscar.bookstoremonolith.dto.ApiResponse;
 import com.oscar.bookstoremonolith.dto.UserCreateDTO;
 import com.oscar.bookstoremonolith.dto.UserDTO;
-import com.oscar.bookstoremonolith.entity.User;
 import com.oscar.bookstoremonolith.service.UserService;
+import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -19,18 +22,26 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.findAll();
+    public ApiResponse<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.findAll();
+        return ApiResponseUtils.success("Users found", users);
     }
 
     @GetMapping("/{userId}")
-    public UserDTO getUserById(@PathVariable("userId") Long userId) {
-        return userService.findById(userId);
+    public ApiResponse<UserDTO> getUserById(@PathVariable("userId") Long userId) {
+        UserDTO user = userService.findById(userId);
+        return ApiResponseUtils.success("User found", user);
     }
 
     @PostMapping
-    public UserDTO createUser(@RequestBody UserCreateDTO userDTO) {
-        return userService.createUser(userDTO);
+    public ApiResponse<UserDTO> createUser(@RequestBody UserCreateDTO userDTO) {
+        UserDTO userCreated = userService.createUser(userDTO);
+        return new ApiResponse<>(
+                HttpStatus.CREATED.value(),
+                "User created",
+                userCreated,
+                LocalDateTime.now()
+        );
     }
 
 

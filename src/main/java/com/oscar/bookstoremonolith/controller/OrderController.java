@@ -1,21 +1,20 @@
 package com.oscar.bookstoremonolith.controller;
 
 import com.oscar.bookstoremonolith.dto.ApiResponse;
+import com.oscar.bookstoremonolith.dto.ApiResponsePaged;
 import com.oscar.bookstoremonolith.dto.OrderCreateDTO;
 import com.oscar.bookstoremonolith.dto.OrderDTO;
-import com.oscar.bookstoremonolith.entity.Order;
 import com.oscar.bookstoremonolith.service.OrderService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
-import com.oscar.bookstoremonolith.utils.PaginationUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -28,9 +27,11 @@ public class OrderController {
     }
 
     @GetMapping
-    public ApiResponse<Page<OrderDTO>> getAllOrders(@PageableDefault Pageable pageable) {
-        Page<OrderDTO> orders = PaginationUtils.listToPage(orderService.findAll(), pageable);
-        return ApiResponseUtils.success("Orders found", orders);
+    public ResponseEntity<ApiResponse<ApiResponsePaged<OrderDTO>>> getAllOrders(@PageableDefault Pageable pageable) {
+        Page<OrderDTO> orders = orderService.findAll(pageable);
+        ApiResponsePaged<OrderDTO> responsePaged = ApiResponseUtils.successPaged(orders);
+        ApiResponse<ApiResponsePaged<OrderDTO>> apiResponse = ApiResponseUtils.success("Orders found", responsePaged);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/{orderId}")
@@ -40,14 +41,15 @@ public class OrderController {
     }
 
     @PostMapping
-    public ApiResponse<OrderDTO> createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO) {
+    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO) {
         OrderDTO orderCreated = orderService.createOrder(orderCreateDTO);
-        return new ApiResponse<>(
+        ApiResponse<OrderDTO> apiResponse = new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 "Order created",
                 orderCreated,
                 LocalDateTime.now()
         );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
 }

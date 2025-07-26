@@ -4,6 +4,7 @@ import com.oscar.bookstoremonolith.dto.OrderDTO;
 import com.oscar.bookstoremonolith.entity.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 

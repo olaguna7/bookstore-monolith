@@ -11,6 +11,8 @@ import com.oscar.bookstoremonolith.repository.OrderRepository;
 import com.oscar.bookstoremonolith.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,8 +29,8 @@ public class OrderService {
     private final BookRepository bookRepository;
     private final OrderMapper orderMapper;
 
-    public List<OrderDTO> findAll() {
-        return orderMapper.toDtoList(orderRepository.findAll());
+    public Page<OrderDTO> findAll(Pageable pageable) {
+        return orderRepository.findAll(pageable).map(orderMapper::toDto);
     }
 
     public OrderDTO findById(Long orderId) {

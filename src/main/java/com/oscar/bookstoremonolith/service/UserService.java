@@ -7,6 +7,8 @@ import com.oscar.bookstoremonolith.exception.DuplicateEntityException;
 import com.oscar.bookstoremonolith.mapper.UserMapper;
 import com.oscar.bookstoremonolith.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +24,8 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    public List<UserDTO> findAll() {
-        return userMapper.toDtoList(userRepository.findAll());
+    public Page<UserDTO> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable).map(userMapper::toDto);
     }
 
     public UserDTO findById(Long userId) {

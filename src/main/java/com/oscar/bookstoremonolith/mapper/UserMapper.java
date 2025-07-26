@@ -3,6 +3,7 @@ package com.oscar.bookstoremonolith.mapper;
 import com.oscar.bookstoremonolith.dto.UserDTO;
 import com.oscar.bookstoremonolith.entity.User;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -12,4 +13,5 @@ public interface UserMapper {
     UserDTO toDto(User user);
 
     List<UserDTO> toDtoList(List<User> users);
+
 }

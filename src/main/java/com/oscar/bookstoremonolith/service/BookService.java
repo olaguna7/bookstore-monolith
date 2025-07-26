@@ -13,6 +13,8 @@ import com.oscar.bookstoremonolith.repository.BookRepository;
 import com.oscar.bookstoremonolith.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,8 +28,8 @@ public class BookService {
     private final BookMapper bookMapper;
     private final BookCreateMapper bookCreateMapper;
 
-    public List<BookDTO> findAll() {
-        return bookMapper.toDtoList(bookRepository.findAll());
+    public Page<BookDTO> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable).map(bookMapper::toDto);
     }
 
     public BookDTO findById(Long bookId) {

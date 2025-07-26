@@ -1,20 +1,20 @@
 package com.oscar.bookstoremonolith.controller;
 
 import com.oscar.bookstoremonolith.dto.ApiResponse;
+import com.oscar.bookstoremonolith.dto.ApiResponsePaged;
 import com.oscar.bookstoremonolith.dto.UserCreateDTO;
 import com.oscar.bookstoremonolith.dto.UserDTO;
 import com.oscar.bookstoremonolith.service.UserService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
-import com.oscar.bookstoremonolith.utils.PaginationUtils;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -27,9 +27,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ApiResponse<Page<UserDTO>> getAllUsers(@PageableDefault(size = 8) Pageable pageable) {
-        Page<UserDTO> users = PaginationUtils.listToPage(userService.findAll(), pageable);
-        return ApiResponseUtils.success("Users found", users);
+    public ResponseEntity<ApiResponse<ApiResponsePaged<UserDTO>>> getAllUsers(@PageableDefault(size = 8) Pageable pageable) {
+        Page<UserDTO> users = userService.findAll(pageable);
+        ApiResponsePaged<UserDTO> responsePaged = ApiResponseUtils.successPaged(users);
+        ApiResponse<ApiResponsePaged<UserDTO>> apiResponse = ApiResponseUtils.success("Users found", responsePaged);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/{userId}")
@@ -39,14 +41,15 @@ public class UserController {
     }
 
     @PostMapping
-    public ApiResponse<UserDTO> createUser(@Valid @RequestBody UserCreateDTO userDTO) {
+    public ResponseEntity<ApiResponse<UserDTO>> createUser(@Valid @RequestBody UserCreateDTO userDTO) {
         UserDTO userCreated = userService.createUser(userDTO);
-        return new ApiResponse<>(
+        ApiResponse<UserDTO> apiResponse = new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 "User created",
                 userCreated,
                 LocalDateTime.now()
         );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
 

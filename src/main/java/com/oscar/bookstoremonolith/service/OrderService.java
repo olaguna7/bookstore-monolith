@@ -38,6 +38,10 @@ public class OrderService {
         return orderMapper.toDto(order);
     }
 
+    public Page<OrderDTO> findOrdersByUserId(Long userId, Pageable pageable) {
+        return orderRepository.findAllByUser_UserId(userId, pageable).map(orderMapper::toDto);
+    }
+
     public OrderDTO createOrder(OrderCreateDTO orderCreateDTO) {
         User user = userRepository.findById(orderCreateDTO.getUserId()).orElseThrow(EntityNotFoundException::new);
         List<Book> books = bookRepository.findAllByBookIdIn(orderCreateDTO.getBooksIds());

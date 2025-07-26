@@ -1,9 +1,7 @@
 package com.oscar.bookstoremonolith.controller;
 
-import com.oscar.bookstoremonolith.dto.ApiResponse;
-import com.oscar.bookstoremonolith.dto.ApiResponsePaged;
-import com.oscar.bookstoremonolith.dto.UserCreateDTO;
-import com.oscar.bookstoremonolith.dto.UserDTO;
+import com.oscar.bookstoremonolith.dto.*;
+import com.oscar.bookstoremonolith.service.OrderService;
 import com.oscar.bookstoremonolith.service.UserService;
 import com.oscar.bookstoremonolith.utils.ApiResponseUtils;
 import jakarta.validation.Valid;
@@ -21,10 +19,14 @@ import java.time.LocalDateTime;
 public class UserController {
 
     private final UserService userService;
+    private final OrderService orderService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, OrderService orderService) {
         this.userService = userService;
+        this.orderService = orderService;
     }
+
+    // ---------- GETs --------------
 
     @GetMapping
     public ResponseEntity<ApiResponse<ApiResponsePaged<UserDTO>>> getAllUsers(@PageableDefault(size = 8) Pageable pageable) {
@@ -35,10 +37,35 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ApiResponse<UserDTO> getUserById(@PathVariable("userId") Long userId) {
+    public ResponseEntity<ApiResponse<UserDTO>> getUserById(@PathVariable Long userId) {
         UserDTO user = userService.findById(userId);
-        return ApiResponseUtils.success("User found", user);
+        ApiResponse<UserDTO> apiResponse = ApiResponseUtils.success("User found by id", user);
+        return ResponseEntity.ok(apiResponse);
     }
+
+    @GetMapping("/by-username/{username}")
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByUsername(@PathVariable String username) {
+        UserDTO user = userService.findByUsername(username);
+        ApiResponse<UserDTO> apiResponse = ApiResponseUtils.success("User found by username", user);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/by-email/{email}")
+    public ResponseEntity<ApiResponse<UserDTO>> getUserByEmail(@PathVariable String email) {
+        UserDTO user = userService.findByEmail(email);
+        ApiResponse<UserDTO> apiResponse = ApiResponseUtils.success("User found by email", user);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/{userId}/orders")
+    public ResponseEntity<ApiResponse<ApiResponsePaged<OrderDTO>>> getUserOrders(@PathVariable Long userId, @PageableDefault Pageable pageable) {
+        Page<OrderDTO> orders = orderService.findOrdersByUserId(userId, pageable);
+        ApiResponsePaged<OrderDTO> responsePaged = ApiResponseUtils.successPaged(orders);
+        ApiResponse<ApiResponsePaged<OrderDTO>> apiResponse = ApiResponseUtils.success("Orders found by user", responsePaged);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // ---------- POSTs --------------
 
     @PostMapping
     public ResponseEntity<ApiResponse<UserDTO>> createUser(@Valid @RequestBody UserCreateDTO userDTO) {
@@ -50,6 +77,29 @@ public class UserController {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    // ---------- PUTs --------------
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<ApiResponse<UserDTO>> updateUser(@PathVariable Long userId, @Valid @RequestBody UserCreateDTO userDTO) {
+        UserDTO userModified = userService.updateUser(userId, userDTO);
+        ApiResponse<UserDTO> apiResponse = ApiResponseUtils.success("User successfully modified", userModified);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // ---------- DELETEs --------------
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.NO_CONTENT.value(),
+                "User id=[" + userId + "]successfully deleted",
+                null,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
     }
 
 

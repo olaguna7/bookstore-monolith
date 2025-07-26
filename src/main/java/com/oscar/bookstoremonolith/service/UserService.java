@@ -33,6 +33,16 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
+    public UserDTO findByUsername(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(EntityNotFoundException::new);
+        return userMapper.toDto(user);
+    }
+
+    public UserDTO findByEmail(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return userMapper.toDto(user);
+    }
+
     public UserDTO createUser(UserCreateDTO userDTO) {
         if (userRepository.existsByUsername(userDTO.getUsername())) {
             throw new DuplicateEntityException("User", "username", userDTO.getUsername());
@@ -43,6 +53,22 @@ public class UserService {
         user.setEmail(userDTO.getEmail());
         user.setPassword(userDTO.getPassword());
         return userMapper.toDto(userRepository.save(user));
+    }
+
+    public UserDTO updateUser(Long userId, UserCreateDTO userDTO) {
+        User user = userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        user.setUsername(userDTO.getUsername());
+        user.setEmail(userDTO.getEmail());
+        user.setPassword(userDTO.getPassword());
+        return userMapper.toDto(userRepository.save(user));
+    }
+
+    public void deleteUser(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException();
+        }
+
+        userRepository.deleteById(userId);
     }
 
 }

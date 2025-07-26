@@ -26,6 +26,8 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    // ---------- GETs --------------
+
     @GetMapping
     public ResponseEntity<ApiResponse<ApiResponsePaged<BookDTO>>> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
         Page<BookDTO> books = bookService.findAll(pageable);
@@ -41,6 +43,31 @@ public class BookController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @GetMapping("/by-isbn/{isbn}")
+    public ResponseEntity<ApiResponse<BookDTO>> getBookByIsbn(@PathVariable String isbn) {
+        BookDTO book = bookService.findByIsbn(isbn);
+        ApiResponse<BookDTO> apiResponse = ApiResponseUtils.success("Book found by isbn", book);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/by-title/{title}")
+    public ResponseEntity<ApiResponse<ApiResponsePaged<BookDTO>>> getBooksByTitle(@PathVariable String title, Pageable pageable) {
+        Page<BookDTO> books = bookService.findByTitleContaining(title, pageable);
+        ApiResponsePaged<BookDTO> responsePaged = ApiResponseUtils.successPaged(books);
+        ApiResponse<ApiResponsePaged<BookDTO>> apiResponse = ApiResponseUtils.success("Books found by title containing " + title, responsePaged);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @GetMapping("/by-author/{authorId}")
+    public ResponseEntity<ApiResponse<ApiResponsePaged<BookDTO>>> getBooksByAuthor(@PathVariable Long authorId, Pageable pageable) {
+        Page<BookDTO> books = bookService.findAllByAuthor(authorId, pageable);
+        ApiResponsePaged<BookDTO> responsePaged = ApiResponseUtils.successPaged(books);
+        ApiResponse<ApiResponsePaged<BookDTO>> apiResponse = ApiResponseUtils.success("Books found by author [authorId=" + authorId + "]", responsePaged);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // ---------- POSTs --------------
+
     @PostMapping
     public ResponseEntity<ApiResponse<BookDTO>> createBook(@Valid @RequestBody BookCreateDTO bookDTO) {
         BookDTO bookCreated = bookService.createBook(bookDTO);
@@ -51,6 +78,29 @@ public class BookController {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    // ---------- PUTs --------------
+
+    @PutMapping("/{bookId}")
+    public ResponseEntity<ApiResponse<BookDTO>> updateBook(@PathVariable Long bookId, @Valid @RequestBody BookCreateDTO bookDTO) {
+        BookDTO bookUpdated = bookService.updateBook(bookId, bookDTO);
+        ApiResponse<BookDTO> apiResponse = ApiResponseUtils.success("Book successfully updated", bookUpdated);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // ---------- DELETEs --------------
+
+    @DeleteMapping("/{bookId}")
+    public ResponseEntity<ApiResponse<Void>> deleteBook(@PathVariable Long bookId) {
+        bookService.deleteBook(bookId);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.NO_CONTENT.value(),
+                "Book id=[" + bookId + "] successfully deleted",
+                null,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
     }
 
 }

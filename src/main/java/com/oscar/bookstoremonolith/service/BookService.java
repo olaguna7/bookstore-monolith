@@ -37,16 +37,50 @@ public class BookService {
         return bookMapper.toDto(book);
     }
 
-    public BookDTO createBook(BookCreateDTO bookCreateDTO) {
-        if (bookRepository.existsByIsbn(bookCreateDTO.getIsbn())) {
-            throw new DuplicateEntityException("Book", "isbn", bookCreateDTO.getIsbn());
+    public BookDTO findByIsbn(String isbn) {
+        Book book = bookRepository.findByIsbn(isbn).orElseThrow(EntityNotFoundException::new);
+        return bookMapper.toDto(book);
+    }
+
+    public Page<BookDTO> findByTitleContaining(String title, Pageable pageable) {
+        return bookRepository.findAllByTitleContaining(title, pageable).map(bookMapper::toDto);
+    }
+
+    public Page<BookDTO> findAllByAuthor(Long authorId, Pageable pageable) {
+        return bookRepository.findByAuthors_AuthorId(authorId, pageable).map(bookMapper::toDto);
+    }
+
+    public BookDTO createBook(BookCreateDTO bookDTO) {
+        if (bookRepository.existsByIsbn(bookDTO.getIsbn())) {
+            throw new DuplicateEntityException("Book", "isbn", bookDTO.getIsbn());
         }
 
-        List<Author> authors = authorRepository.findAllByAuthorIdIn(bookCreateDTO.getAuthorsIds());
-        Book book = bookCreateMapper.toEntity(bookCreateDTO);
+        Book book = bookCreateMapper.toEntity(bookDTO);
+        List<Author> authors = authorRepository.findAllByAuthorIdIn(bookDTO.getAuthorsIds());
         book.setAuthors(authors);
         authors.forEach(author -> author.getBooks().add(book));
         return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    public BookDTO updateBook(Long bookId, BookCreateDTO bookDTO) {
+        Book book = bookRepository.findById(bookId).orElseThrow(EntityNotFoundException::new);
+
+        if (bookRepository.existsByIsbn(bookDTO.getIsbn()) && !bookDTO.getIsbn().equals(book.getIsbn())) {
+            throw new DuplicateEntityException("Book", "isbn", bookDTO.getIsbn());
+        }
+
+        List<Author> authors = authorRepository.findAllByAuthorIdIn(bookDTO.getAuthorsIds());
+        book.setAuthors(authors);
+        authors.forEach(author -> author.getBooks().add(book));
+        return bookMapper.toDto(bookRepository.save(book));
+    }
+
+    public void deleteBook(Long bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            throw new EntityNotFoundException();
+        }
+
+        bookRepository.deleteById(bookId);
     }
 
 }

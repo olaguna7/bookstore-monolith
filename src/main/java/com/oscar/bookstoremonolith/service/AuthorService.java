@@ -35,11 +35,32 @@ public class AuthorService {
         return authorMapper.toDto(author);
     }
 
+    public Page<AuthorDTO> findByNameContaining(String name, Pageable pageable) {
+        return authorRepository.findAllByNameContaining(name, pageable).map(authorMapper::toDto);
+    }
+
     public AuthorDTO createAuthor(AuthorCreateDTO authorCreateDTO) {
         List<Book> books = bookRepository.findAllByBookIdIn(authorCreateDTO.getBooksIds());
         Author author = authorCreateMapper.toEntity(authorCreateDTO);
         author.setBooks(books);
         return authorMapper.toDto(authorRepository.save(author));
+    }
+
+    public AuthorDTO updateAuthor(Long authorId, AuthorCreateDTO authorDTO) {
+        Author author = authorRepository.findById(authorId).orElseThrow(EntityNotFoundException::new);
+        List<Book> books = bookRepository.findAllByBookIdIn(authorDTO.getBooksIds());
+        author.setName(authorDTO.getName());
+        author.setBirthday(authorDTO.getBirthday());
+        author.setBooks(books);
+        return authorMapper.toDto(authorRepository.save(author));
+    }
+
+    public void deleteAuthor(Long authorId) {
+        if (!authorRepository.existsById(authorId)) {
+            throw new EntityNotFoundException();
+        }
+
+        authorRepository.deleteById(authorId);
     }
 
 }

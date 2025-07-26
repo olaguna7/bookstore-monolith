@@ -26,6 +26,8 @@ public class OrderController {
         this.orderService = orderService;
     }
 
+    // ---------- GETs --------------
+
     @GetMapping
     public ResponseEntity<ApiResponse<ApiResponsePaged<OrderDTO>>> getAllOrders(@PageableDefault Pageable pageable) {
         Page<OrderDTO> orders = orderService.findAll(pageable);
@@ -40,9 +42,11 @@ public class OrderController {
         return ApiResponseUtils.success("Order found", order);
     }
 
+    // ---------- POSTs --------------
+
     @PostMapping
-    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(@Valid @RequestBody OrderCreateDTO orderCreateDTO) {
-        OrderDTO orderCreated = orderService.createOrder(orderCreateDTO);
+    public ResponseEntity<ApiResponse<OrderDTO>> createOrder(@Valid @RequestBody OrderCreateDTO orderDTO) {
+        OrderDTO orderCreated = orderService.createOrder(orderDTO);
         ApiResponse<OrderDTO> apiResponse = new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 "Order created",
@@ -50,6 +54,30 @@ public class OrderController {
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+    }
+
+    // ---------- PUTs --------------
+
+    @PutMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<OrderDTO>> updateOrder(@PathVariable Long orderId, @Valid @RequestBody OrderCreateDTO orderDTO) {
+        OrderDTO orderUpdated = orderService.updateOrder(orderId, orderDTO);
+        ApiResponse<OrderDTO> apiResponse = ApiResponseUtils.success("Order sucessfully updated", orderUpdated);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // ---------- DELETEs --------------
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable Long orderId) {
+        orderService.deleteOrder(orderId);
+        ApiResponse<Void> apiResponse = new ApiResponse<>(
+                HttpStatus.NO_CONTENT.value(),
+                "Order successfully deleted",
+                null,
+                LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.NO_CONTENT);
     }
 
 }

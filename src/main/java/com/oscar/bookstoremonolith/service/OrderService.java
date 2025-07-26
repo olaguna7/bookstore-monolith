@@ -56,6 +56,26 @@ public class OrderService {
         return orderDTO;
     }
 
+    public OrderDTO updateOrder(Long orderId, OrderCreateDTO orderDTO) {
+        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        User user = userRepository.findById(orderDTO.getUserId()).orElseThrow(EntityNotFoundException::new);
+        List<Book> books = bookRepository.findAllByBookIdIn(orderDTO.getBooksIds());
+
+        order.setAddress(orderDTO.getAddress());
+        order.setUser(user);
+        order.setBooks(books);
+
+        return orderMapper.toDto(orderRepository.save(order));
+    }
+
+    public void deleteOrder(Long orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new EntityNotFoundException();
+        }
+
+        orderRepository.deleteById(orderId);
+    }
+
     private double calculatePriceOrder(Order order) {
         return order.getBooks().stream()
                 .map(Book::getPrice)

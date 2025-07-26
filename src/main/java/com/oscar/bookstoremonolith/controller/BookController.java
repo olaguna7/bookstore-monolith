@@ -1,6 +1,7 @@
 package com.oscar.bookstoremonolith.controller;
 
 import com.oscar.bookstoremonolith.dto.ApiResponse;
+import com.oscar.bookstoremonolith.dto.ApiResponsePaged;
 import com.oscar.bookstoremonolith.dto.BookCreateDTO;
 import com.oscar.bookstoremonolith.dto.BookDTO;
 import com.oscar.bookstoremonolith.service.BookService;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -25,26 +27,30 @@ public class BookController {
     }
 
     @GetMapping
-    public ApiResponse<Page<BookDTO>> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
+    public ResponseEntity<ApiResponse<ApiResponsePaged<BookDTO>>> getAllBooks(@PageableDefault(size = 5) Pageable pageable) {
         Page<BookDTO> books = bookService.findAll(pageable);
-        return ApiResponseUtils.success("Books found", books);
+        ApiResponsePaged<BookDTO> responsePaged = ApiResponseUtils.successPaged(books);
+        ApiResponse<ApiResponsePaged<BookDTO>> apiResponse = ApiResponseUtils.success("Books found", responsePaged);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @GetMapping("/{bookId}")
-    public ApiResponse<BookDTO> getBookById(@PathVariable("bookId") Long bookId) {
+    public ResponseEntity<ApiResponse<BookDTO>> getBookById(@PathVariable("bookId") Long bookId) {
         BookDTO book = bookService.findById(bookId);
-        return ApiResponseUtils.success("Book found", book);
+        ApiResponse<BookDTO> apiResponse = ApiResponseUtils.success("Book found", book);
+        return ResponseEntity.ok(apiResponse);
     }
 
     @PostMapping
-    public ApiResponse<BookDTO> createBook(@Valid @RequestBody BookCreateDTO bookDTO) {
+    public ResponseEntity<ApiResponse<BookDTO>> createBook(@Valid @RequestBody BookCreateDTO bookDTO) {
         BookDTO bookCreated = bookService.createBook(bookDTO);
-        return new ApiResponse<>(
+        ApiResponse<BookDTO> apiResponse = new ApiResponse<>(
                 HttpStatus.CREATED.value(),
                 "Book created successfully",
                 bookCreated,
                 LocalDateTime.now()
         );
+        return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
     }
 
 }

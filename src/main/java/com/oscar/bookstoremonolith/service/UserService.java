@@ -48,6 +48,10 @@ public class UserService {
             throw new DuplicateEntityException("User", "username", userDTO.getUsername());
         }
 
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            throw new DuplicateEntityException("User", "email", userDTO.getEmail());
+        }
+
         User user = new User();
         user.setUsername(userDTO.getUsername());
         user.setEmail(userDTO.getEmail());

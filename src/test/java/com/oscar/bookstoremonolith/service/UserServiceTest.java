@@ -2,7 +2,6 @@ package com.oscar.bookstoremonolith.service;
 
 import com.oscar.bookstoremonolith.dto.UserCreateDTO;
 import com.oscar.bookstoremonolith.dto.UserDTO;
-import com.oscar.bookstoremonolith.entity.User;
 import com.oscar.bookstoremonolith.exception.DuplicateEntityException;
 import com.oscar.bookstoremonolith.mapper.UserMapper;
 import com.oscar.bookstoremonolith.repository.UserRepository;
@@ -15,8 +14,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -68,12 +65,12 @@ class UserServiceTest {
     @Test
     @DisplayName("findByUsername should throw EntityNotFoundException when user does not exist")
     void findByUsernameShouldThrowException_whenUserDoesNotExist() {
-        when(userRepository.findByUsername("userrrr")).thenThrow(EntityNotFoundException.class);
+        when(userRepository.findByUsername("user")).thenThrow(EntityNotFoundException.class);
 
-        assertThatThrownBy(() -> userService.findByUsername("userrrr"))
+        assertThatThrownBy(() -> userService.findByUsername("user"))
                 .isInstanceOf(EntityNotFoundException.class);
 
-        verify(userRepository, times(1)).findByUsername("userrrr");
+        verify(userRepository, times(1)).findByUsername("user");
     }
 
     @Test
@@ -135,6 +132,17 @@ class UserServiceTest {
                 .isInstanceOf(EntityNotFoundException.class);
 
         verify(userRepository, times(1)).existsById(1L);
+    }
+
+    @Test
+    @DisplayName("deleteUser should delete user when user exists")
+    void deleteUserShouldDeleteUser_whenUserExists() {
+        when(userRepository.existsById(1L)).thenReturn(true);
+
+        userService.deleteUser(1L);
+
+        verify(userRepository, times(1)).existsById(1L);
+        verify(userRepository, times(1)).deleteById(1L);
     }
 
 }

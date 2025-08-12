@@ -13,4 +13,5 @@ public interface BookCreateMapper {
     @Mapping(target = "authors", ignore = true)
     @Mapping(target = "order", ignore = true)
     Book toEntity(BookCreateDTO bookCreateDTO);
+
 }
